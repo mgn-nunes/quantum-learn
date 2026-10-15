@@ -6,7 +6,7 @@
 ![ODS 4](https://img.shields.io/badge/ODS-4%20Educação%20de%20Qualidade-red)
 
 
-## 📖 Sobre o projeto
+## Sobre o projeto
 
 A computação quântica é uma tecnologia emergente, mas ainda em estágio inicial, e aprender a programá-la costuma exigir bagagem prévia em programação e em física. Faltam plataformas **simplificadas, gratuitas e de código aberto** que permitam começar de forma visual.
 
@@ -17,12 +17,12 @@ Este projeto, desenvolvido como **Trabalho de Conclusão de Curso (TCC)**, prop�
 - **trilhas de aprendizado** que levam o usuário dos conceitos básicos aos mais avançados.
 
 
-## 🌍 Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
+## Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
 
 O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a barreira de entrada para uma tecnologia emergente e tornar seu aprendizado gratuito e acessível.
 
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - **Editor de programação em blocos (drag-and-drop)** com portas quânticas básicas, para compor fluxos quânticos visualmente.
 - **Simulação de execução** com exibição dos resultados esperados (estados, probabilidades etc.), sem necessidade de hardware quântico.
@@ -34,7 +34,7 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 - **Gratuita e open-source**, aberta a contribuições da comunidade.
 
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 | Componente | Abordagem | Tecnologia |
 |---|---|---|
@@ -45,7 +45,7 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 | Hospedagem | *Buy* ou *Integrate* | _A definir_ |
 
 
-## 🎯 Escopo
+## Escopo
 
 **Dentro do escopo**
 - Plataforma de programação quântica em blocos.
@@ -56,12 +56,12 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 - Prover acessibilidade à tecnologia quântica no campo da educação e da pesquisa formal.
 
 
-## 👥 Público-alvo
+## Público-alvo
 
 Instituições de ensino, plataformas de aprendizagem, empresas interessadas em tecnologia quântica, entidades que precisem treinar pessoas no tema, hobbyistas e indivíduos curiosos.
 
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] Definir stack tecnológica do editor de blocos
 - [ ] Escolher e integrar a biblioteca de simulação quântica
@@ -72,7 +72,7 @@ Instituições de ensino, plataformas de aprendizagem, empresas interessadas em 
 - [ ] Publicar a versão web inicial
 
 
-## 👨‍💻 Autores
+## Autores
 
 Projeto desenvolvido por estudantes de Engenharia da Computação como Trabalho de Conclusão de Curso.
 
