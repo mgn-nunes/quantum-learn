@@ -5,7 +5,6 @@
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 ![ODS 4](https://img.shields.io/badge/ODS-4%20Educação%20de%20Qualidade-red)
 
----
 
 ## 📖 Sobre o projeto
 
@@ -17,11 +16,11 @@ Este projeto, desenvolvido como **Trabalho de Conclusão de Curso (TCC)**, prop�
 - um **simulador** que mostra o resultado da execução, sem depender de hardware quântico real (de acesso difícil e alto custo);
 - **trilhas de aprendizado** que levam o usuário dos conceitos básicos aos mais avançados.
 
-### 🌍 Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
+
+## 🌍 Alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)
 
 O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a barreira de entrada para uma tecnologia emergente e tornar seu aprendizado gratuito e acessível.
 
----
 
 ## ✨ Funcionalidades
 
@@ -34,7 +33,6 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 - **Interface simplificada**, pensada para quem tem pouco ou nenhum conhecimento prévio em programação ou física quântica.
 - **Gratuita e open-source**, aberta a contribuições da comunidade.
 
----
 
 ## 🛠️ Tecnologias
 
@@ -46,7 +44,6 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 | Gerenciamento de usuários | *Buy* ou *Integrate* | _A definir_ |
 | Hospedagem | *Buy* ou *Integrate* | _A definir_ |
 
----
 
 ## 🎯 Escopo
 
@@ -58,13 +55,11 @@ O projeto contribui com o **ODS 4 – Educação de Qualidade**, ao reduzir a ba
 - Criação de uma plataforma de linguagem de programação quântica.
 - Prover acessibilidade à tecnologia quântica no campo da educação e da pesquisa formal.
 
----
 
 ## 👥 Público-alvo
 
 Instituições de ensino, plataformas de aprendizagem, empresas interessadas em tecnologia quântica, entidades que precisem treinar pessoas no tema, hobbyistas e indivíduos curiosos.
 
----
 
 ## 🗺️ Roadmap
 
@@ -76,13 +71,6 @@ Instituições de ensino, plataformas de aprendizagem, empresas interessadas em 
 - [ ] Implementar acompanhamento de progresso
 - [ ] Publicar a versão web inicial
 
----
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Abra uma *issue* para sugerir melhorias ou relatar problemas, ou envie um *pull request*. Um guia de contribuição será adicionado em breve.
-
----
 
 ## 👨‍💻 Autores
 
