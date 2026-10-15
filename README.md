@@ -1,4 +1,4 @@
-# qPiece
+# CubeIT / qFlow / BLO-Q (Nome a ser definido)
 
 > Plataforma **gratuita**, **open-source** e **acessível pelo navegador** para aprender computação quântica montando circuitos com blocos *drag-and-drop*, guiada por trilhas de aprendizado progressivas.
 
