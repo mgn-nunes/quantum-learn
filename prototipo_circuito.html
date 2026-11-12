@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Circuito quântico</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--canvas:#181a22;--painel:#21242f;--linha:#343849;--texto:#eceef6;--suave:#9a9fb5;--tinta:#13151c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--canvas)}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--canvas);color:var(--texto);font-family:'Bricolage Grotesque',system-ui,sans-serif}
+.editor{position:relative;height:100%;overflow:hidden}
+.vista{position:absolute;inset:0;overflow:auto}
+.mundo{position:relative;width:1500px;height:900px;background:radial-gradient(circle,#323649 2px,transparent 2.5px) 0 0/20px 20px}
+#fios{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;overflow:visible}
+.hit{pointer-events:stroke;cursor:pointer}
+.chip{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--cor);color:var(--tinta);box-shadow:0 4px 0 var(--sombra);outline:3px solid transparent;outline-offset:4px;cursor:grab;user-select:none;touch-action:none;transition:outline-color .12s}
+.chip:active{cursor:grabbing}
+.chip[data-sel=true]{outline-color:#fff;z-index:4}
+.miolo{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 6px}
+.nome{font-size:26px;font-weight:800;line-height:1}.nome.longo{font-size:17px}
+.sub{font-size:12px;font-weight:700;opacity:.65}
+.rot{position:absolute;left:16px;transform:translateY(-50%);font-size:11px;font-weight:700;color:rgba(19,21,28,.72);pointer-events:none}
+.ang{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700}
+.ang select{padding:2px 4px;border:0;border-radius:6px;background:rgba(19,21,28,.18);color:var(--tinta);font:inherit;cursor:pointer}
+.pino{position:absolute;display:block;width:22px;height:22px;margin-top:-11px;border-radius:50%;cursor:crosshair;touch-action:none;z-index:2;transition:scale .12s;background:radial-gradient(circle,var(--fio) 0 4px,#181a22 4.5px 7px,transparent 7.5px)}
+.pino.in{left:-11px}.pino.out{right:-11px}.pino:hover{scale:1.3}
+.pino-q{--fio:#6ec1ff}.pino-b{--fio:#ffc857}
+.painel{position:absolute;top:calc(100% + 16px);right:0;z-index:6;min-width:300px;max-width:min(400px,88vw);padding:14px;border:1px solid var(--linha);border-radius:14px;background:var(--painel);color:var(--texto);box-shadow:0 5px 0 #0f1117;font-size:14px;font-weight:500;cursor:default;user-select:text;touch-action:auto}
+.painel h3{margin:0 0 8px;font-size:15px}
+.painel table{width:100%;border-collapse:collapse}
+.painel th{padding:4px 6px;font-size:12px;font-weight:500;text-align:left;color:var(--suave)}
+.painel td{padding:6px;border-top:1px solid var(--linha);font-variant-numeric:tabular-nums}
+.barra{position:relative;min-width:120px;height:22px;border-radius:6px;background:var(--canvas);overflow:hidden}
+.barra i{position:absolute;inset:0 auto 0 0;background:#2e7d4f}
+.barra span{position:relative;padding:0 8px;font-weight:700;line-height:22px}
+.nota{margin:8px 0 0;font-size:12px;color:var(--suave)}.erro{margin:0;color:#ff8fa3;font-weight:700}
+.topo{position:absolute;inset:0 0 auto 0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;pointer-events:none}
+.topo h1{margin:0;font-size:17px;font-weight:700}.topo p{margin:2px 0 0;font-size:12px;color:var(--suave)}
+.dir{display:flex;align-items:center;gap:12px;pointer-events:auto}
+.leg{display:flex;gap:16px;margin:0;padding:0;list-style:none;font-size:13px;color:var(--suave)}
+.leg li{display:flex;align-items:center;gap:6px}
+.btn{padding:7px 14px;border:1px solid var(--linha);border-radius:10px;background:var(--painel);color:var(--texto);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.btn:hover{border-color:#6ec1ff;color:#6ec1ff}.btn.p:hover{border-color:#ff8fa3;color:#ff8fa3}
+.btn:focus-visible,.ficha:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.area-barra{position:absolute;inset:auto 12px 14px;z-index:10;display:flex;justify-content:center;pointer-events:none}
+.dock{display:flex;align-items:flex-end;gap:14px;max-width:100%;padding:12px 16px 10px;overflow-x:auto;background:var(--painel);border:1px solid var(--linha);border-radius:22px;box-shadow:0 5px 0 #0f1117;pointer-events:auto}
+.grupo{display:flex;flex:none;flex-direction:column;gap:7px}
+.grupo+.grupo{padding-left:14px;border-left:1px solid var(--linha)}
+.fichas{display:flex;gap:8px;padding-bottom:4px}
+.legenda{font-size:11px;font-weight:500;color:var(--suave);white-space:nowrap}
+.ficha{display:grid;min-width:46px;height:44px;padding:0 12px;place-items:center;border-radius:11px;background:var(--cor);color:var(--tinta);box-shadow:0 4px 0 var(--sombra);font-size:18px;font-weight:800;cursor:grab;user-select:none;transition:transform .08s,box-shadow .08s}
+.ficha:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sombra)}
+.vazio{position:absolute;top:42%;left:50%;z-index:5;max-width:380px;transform:translate(-50%,-50%);text-align:center;color:var(--suave);line-height:1.5;pointer-events:none}
+.vazio b{display:block;margin-bottom:8px;color:var(--texto);font-size:24px}
+.aviso{position:absolute;top:70px;left:50%;z-index:20;max-width:min(440px,calc(100vw - 32px));padding:10px 16px;transform:translateX(-50%);border-radius:12px;background:#eceef6;color:var(--tinta);box-shadow:0 4px 0 #9a9fb5;font-size:14px;font-weight:700}
+@media (max-width:640px){.leg{display:none}.topo p{display:none}}
+@media (prefers-reduced-motion:reduce){.chip,.ficha,.pino{transition:none}}
+</style>
+</head>
+<body>
+<div class="editor">
+<div class="vista" id="vista"><div class="mundo" id="mundo"><svg id="fios" aria-hidden="true"></svg></div></div>
+<header class="topo">
+<div><h1>Circuito quântico</h1><p>Clique no bloco Histograma para ver a tabela de probabilidades.</p></div>
+<div class="dir">
+<ul class="leg" aria-label="Tipos de fio">
+<li><svg width="30" height="8" aria-hidden="true"><line x1="3" y1="4" x2="27" y2="4" stroke="#6ec1ff" stroke-width="4" stroke-linecap="round"/></svg>Qubit</li>
+<li><svg width="30" height="8" aria-hidden="true"><line x1="3" y1="4" x2="27" y2="4" stroke="#ffc857" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 9"/></svg>Bit clássico</li>
+</ul>
+<button class="btn" id="ex" type="button">Somador</button>
+<button class="btn p" id="lim" type="button">Limpar tudo</button>
+</div>
+</header>
+<div class="vazio" id="vazio"><b>Arraste um qubit para começar</b>Pegue um bloco na barra de baixo e solte aqui. Depois puxe um fio da bolinha à direita de um bloco até a bolinha à esquerda de outro. Delete remove o que estiver selecionado.</div>
+<div class="aviso" id="aviso" role="status" hidden></div>
+<div class="area-barra"><nav class="dock" id="dock" aria-label="Blocos disponíveis"></nav></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),mundo=$('#mundo'),fios=$('#fios'),vista=$('#vista'),TIPO='application/x-bloco-quantico';
+const sn=v=>Math.round(v/20)*20;
+const CAT={qubits:['Qubits','#6ec1ff','#3d8fcf'],porta1:['Portas de 1 qubit','#b79cff','#7d5fd6'],portaN:['Portas de 2+ qubits','#ff8fa3','#d65a73'],medicao:['Medição','#ffc857','#cc9a2a'],resultado:['Resultado','#7ddc9a','#44a866']};
+const Q=r=>({t:'q',r}),Bi=r=>({t:'b',r});
+const p1=(s,nome,titulo,par)=>({id:'gate.'+s,nome,titulo,cat:'porta1',ins:[Q()],outs:[Q()],w:par?112:84,par});
+const c2=(s,nome,titulo,w,a,b)=>({id:'gate.'+s,nome,titulo,cat:'portaN',ins:[Q(a),Q(b)],outs:[Q(),Q()],w});
+const BL=[
+{id:'qubit.create',nome:'|0⟩',titulo:'Qubit: começa no estado |0⟩',cat:'qubits',ins:[],outs:[Q()],w:96},
+p1('x','X','Porta X: troca |0⟩ por |1⟩ e vice-versa'),
+p1('y','Y','Porta Y: gira o qubit em torno do eixo Y'),
+p1('z','Z','Porta Z: inverte o sinal de |1⟩'),
+p1('h','H','Porta Hadamard: coloca o qubit em superposição'),
+p1('s','S','Porta S: gira a fase em 90°'),
+p1('t','T','Porta T: gira a fase em 45°'),
+p1('rx','Rx','Rotação em torno do eixo X, com ângulo θ',1),
+p1('ry','Ry','Rotação em torno do eixo Y, com ângulo θ',1),
+p1('rz','Rz','Rotação em torno do eixo Z, com ângulo θ',1),
+c2('cx','CNOT','CNOT: inverte o alvo quando o controle é |1⟩',132,'controle','alvo'),
+c2('cz','CZ','CZ: aplica Z no alvo quando o controle é |1⟩',120,'controle','alvo'),
+c2('swap','SWAP','SWAP: troca os estados de dois qubits',120,'a','b'),
+{id:'gate.ccx',nome:'Toffoli',titulo:'Toffoli: inverte o alvo quando os dois controles são |1⟩',cat:'portaN',ins:[Q('controle'),Q('controle'),Q('alvo')],outs:[Q(),Q(),Q()],w:150},
+{id:'measure',nome:'Medir',titulo:'Medir: transforma o qubit em um bit clássico (0 ou 1)',cat:'medicao',ins:[Q()],outs:[Bi()],w:104},
+{id:'result.histogram',nome:'Histograma',titulo:'Histograma: clique para ver a tabela de probabilidades',cat:'resultado',ins:[0,1,2,3].map(i=>Bi('bit '+i)),outs:[],w:172}];
+const B=Object.fromEntries(BL.map(b=>[b.id,b]));
+const ANGS=[['pi/8','π/8'],['pi/4','π/4'],['pi/2','π/2'],['pi','π'],['3pi/2','3π/2']];
+const ANG={'pi/8':Math.PI/8,'pi/4':Math.PI/4,'pi/2':Math.PI/2,'pi':Math.PI,'3pi/2':1.5*Math.PI};
+let nodes=[],edges=[],els={},sel=null,tmp=null,seq=0,off=0,tAviso;
+const byId=id=>nodes.find(n=>n.id===id);
+
+/* ---------- simulação (vetor de estado com amplitudes complexas) ---------- */
+function mat(g,th){const s=Math.SQRT1_2,c=Math.cos(th/2),k=Math.sin(th/2);
+return({x:[0,0,1,0,1,0,0,0],y:[0,0,0,-1,0,1,0,0],z:[1,0,0,0,0,0,-1,0],h:[s,0,s,0,s,0,-s,0],s:[1,0,0,0,0,0,0,1],
+t:[1,0,0,0,0,0,Math.SQRT1_2,Math.SQRT1_2],rx:[c,0,0,-k,0,-k,c,0],ry:[c,0,-k,0,k,0,c,0],rz:[c,-k,0,0,0,0,c,k]})[g]}
+function aplicar(re,im,U,tb,cm){
+for(let i=0;i<re.length;i++){if((i&tb)||(i&cm)!==cm)continue;const j=i|tb,xr=re[i],xi=im[i],yr=re[j],yi=im[j];
+re[i]=U[0]*xr-U[1]*xi+U[2]*yr-U[3]*yi;im[i]=U[0]*xi+U[1]*xr+U[2]*yi+U[3]*yr;
+re[j]=U[4]*xr-U[5]*xi+U[6]*yr-U[7]*yi;im[j]=U[4]*xi+U[5]*xr+U[6]*yi+U[7]*yr}}
+function calcular(h){
+const ins=edges.filter(e=>e.t===h.id);
+if(!ins.length)return{erro:'Ligue ao menos um bit (saída de Medir) a este histograma.'};
+const ord=[],vis=new Set(),visita=id=>{if(vis.has(id))return;vis.add(id);edges.forEach(e=>{if(e.t===id)visita(e.s)});ord.push(byId(id))};
+visita(h.id);
+const nos=ord.filter(n=>n!==h),qs=nos.filter(n=>n.b==='qubit.create'),nq=qs.length;
+if(nq>12)return{erro:'Qubits demais para simular no navegador (máximo 12).'};
+const qm={},bm={};qs.forEach((n,k)=>qm[n.id+':0']=k);
+const re=new Float64Array(1<<nq),im=new Float64Array(1<<nq);re[0]=1;
+for(const n of nos){
+if(n.b==='qubit.create')continue;
+const d=B[n.b],q=[];
+for(let i=0;i<d.ins.length;i++){const e=edges.find(e=>e.t===n.id&&e.th===i);
+if(!e)return{erro:`O bloco ${d.nome} tem uma entrada sem fio.`};q.push(qm[e.s+':'+e.sh])}
+if(n.b==='measure'){bm[n.id+':0']=q[0];continue}
+const g=n.b.slice(5);
+if(g==='swap'){qm[n.id+':0']=q[1];qm[n.id+':1']=q[0];continue}
+const ctr=g==='cx'||g==='cz'?1<<q[0]:g==='ccx'?(1<<q[0])|(1<<q[1]):0;
+aplicar(re,im,mat(g==='cx'||g==='ccx'?'x':g==='cz'?'z':g,ANG[n.ang]),1<<q[q.length-1],ctr);
+q.forEach((x,i)=>qm[n.id+':'+i]=x)}
+const bq=ins.map(e=>({i:e.th,q:bm[e.s+':'+e.sh]})).sort((a,b)=>a.i-b.i),mp={};
+for(let s=0;s<re.length;s++){const p=re[s]*re[s]+im[s]*im[s];if(p<1e-9)continue;
+let v=0;bq.forEach((b,j)=>v|=((s>>b.q)&1)<<j);mp[v]=(mp[v]||0)+p}
+return{nq,bq,linhas:Object.keys(mp).map(Number).sort((a,b)=>a-b).map(v=>[v,mp[v]])}}
+const pct=p=>(p*100).toFixed(1).replace('.',',')+'%';
+function htmlPainel(n){
+const r=calcular(n);
+if(r.erro)return`<h3>Tabela de probabilidades</h3><p class="erro">${r.erro}</p>`;
+const hi=[...r.bq].reverse();
+return`<h3>Tabela de probabilidades</h3><table><thead><tr>${hi.map(b=>`<th>bit ${b.i}</th>`).join('')}<th>Probabilidade</th></tr></thead><tbody>${
+r.linhas.map(([v,p])=>`<tr>${hi.map(b=>`<td>${(v>>r.bq.indexOf(b))&1}</td>`).join('')}<td><div class="barra"><i style="width:${p*100}%"></i><span>${pct(p)}</span></div></td></tr>`).join('')}</tbody></table><p class="nota">${r.nq} qubit${r.nq===1?'':'s'} simulado${r.nq===1?'':'s'} · ${1<<r.nq} estados</p>`}
+function painel(n){
+const el=els[n.id];if(!el)return;
+const a=el.querySelector('.painel');if(a)a.remove();
+el.style.zIndex=n.aberto?5:'';
+if(!n.aberto)return;
+const p=document.createElement('div');p.className='painel';p.innerHTML=htmlPainel(n);el.appendChild(p)}
+
+/* ---------- desenho ---------- */
+function pt(n,k,i){const d=B[n.b],a=k==='out'?d.outs:d.ins;return[n.x+(k==='out'?d.w:0),n.y+(i+1)/(a.length+1)*els[n.id].offsetHeight]}
+const curva=(x1,y1,x2,y2)=>{const c=Math.max(40,Math.abs(x2-x1)*.5);return`M${x1},${y1} C${x1+c},${y1} ${x2-c},${y2} ${x2},${y2}`};
+const est=t=>`stroke="${t==='q'?'#6ec1ff':'#ffc857'}" stroke-width="4" stroke-linecap="round"${t==='b'?' stroke-dasharray="1 9"':''}`;
+function desenhar(){
+let h='';
+edges.forEach(e=>{
+const[x1,y1]=pt(byId(e.s),'out',e.sh),[x2,y2]=pt(byId(e.t),'in',e.th),d=curva(x1,y1,x2,y2);
+if(sel&&sel.t==='fio'&&sel.id===e.id)h+=`<path d="${d}" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".85"/>`;
+h+=`<path d="${d}" fill="none" ${est(e.tipo)}/><path class="hit" data-e="${e.id}" d="${d}" fill="none" stroke="transparent" stroke-width="24"/>`});
+if(tmp)h+=`<path d="${tmp.d}" fill="none" opacity=".8" ${est(tmp.tipo)}/>`;
+fios.innerHTML=h}
+function rotular(){let k=0;nodes.forEach(n=>{if(n.b==='qubit.create'){const s=els[n.id].querySelector('.sub');if(s)s.textContent='q'+k++}})}
+function atualizar(){desenhar();nodes.forEach(n=>n.aberto&&painel(n));$('#vazio').hidden=nodes.length>0}
+function selecionar(s){sel=s;nodes.forEach(n=>els[n.id].dataset.sel=!!(s&&s.t==='no'&&s.id===n.id));desenhar()}
+function aviso(t){const a=$('#aviso');a.textContent=t;a.hidden=false;clearTimeout(tAviso);tAviso=setTimeout(()=>a.hidden=true,4000)}
+
+/* ---------- blocos ---------- */
+function mk(b,x,y){
+const d=B[b],c=CAT[d.cat],tot=Math.max(d.ins.length,d.outs.length),n={id:'no-'+(++seq),b,x:Math.max(0,sn(x)),y:Math.max(0,sn(y)),ang:'pi/2'};
+nodes.push(n);
+const el=document.createElement('div');el.className='chip';el.dataset.id=n.id;el.title=d.titulo;
+el.style.cssText=`--cor:${c[1]};--sombra:${c[2]};width:${d.w}px;min-height:${Math.max(64,tot*32+16)}px;left:${n.x}px;top:${n.y}px`;
+const top=(i,t)=>(i+1)/(t+1)*100+'%';
+const pin=(k,a)=>a.map((p,i)=>`<i class="pino pino-${p.t} ${k}" data-n="${n.id}" data-k="${k}" data-i="${i}" data-t="${p.t}" style="top:${top(i,a.length)}"></i>`).join('');
+el.innerHTML=pin('in',d.ins)+d.ins.map((p,i)=>p.r?`<span class="rot" style="top:${top(i,d.ins.length)}">${p.r}</span>`:'').join('')
++`<div class="miolo" style="padding-left:${d.ins.some(p=>p.r)?56:0}px"><span class="nome${d.nome.length>5?' longo':''}">${d.nome}</span>`
++(b==='qubit.create'?'<span class="sub"></span>':'')
++(d.par?`<label class="ang">θ<select aria-label="Ângulo θ">${ANGS.map(a=>`<option value="${a[0]}"${a[0]==='pi/2'?' selected':''}>${a[1]}</option>`).join('')}</select></label>`:'')
++'</div>'+pin('out',d.outs);
+const s=el.querySelector('select');if(s)s.onchange=e=>{n.ang=e.target.value;atualizar()};
+mundo.appendChild(el);els[n.id]=el;rotular();return n}
+function add(b,x,y){const n=mk(b,x,y);selecionar({t:'no',id:n.id});atualizar()}
+function apagar(){
+if(!sel)return;
+if(sel.t==='no'){els[sel.id].remove();delete els[sel.id];nodes=nodes.filter(n=>n.id!==sel.id);edges=edges.filter(e=>e.s!==sel.id&&e.t!==sel.id);rotular()}
+else edges=edges.filter(e=>e.id!==sel.id);
+sel=null;atualizar()}
+function limpar(){nodes.forEach(n=>els[n.id].remove());nodes=[];edges=[];els={};sel=null;atualizar()}
+
+/* ---------- ligações ---------- */
+function criaCiclo(o,d){const v=new Set(),p=[d];while(p.length){const a=p.pop();if(a===o)return true;if(v.has(a))continue;v.add(a);edges.forEach(e=>{if(e.s===a)p.push(e.t)})}return false}
+function validar(s,d){
+if(s.n===d.n)return'Um bloco não pode ser ligado a ele mesmo.';
+if(s.t!==d.t)return'Fios de qubit só ligam em qubits, e fios de bit só em bits.';
+if(edges.some(e=>e.t===d.n&&e.th===d.i))return'Esta entrada já tem um fio. Remova-o antes de ligar outro.';
+if(s.t==='q'&&edges.some(e=>e.s===s.n&&e.sh===s.i))return'Um qubit não pode ser copiado: cada saída liga a uma única entrada.';
+if(criaCiclo(s.n,d.n))return'Isso criaria um ciclo. O circuito corre da esquerda para a direita.';
+return null}
+function ligar(a,b){
+if(a.k===b.k)return aviso('Ligue uma saída (à direita) a uma entrada (à esquerda).');
+const s=a.k==='out'?a:b,d=a.k==='out'?b:a,r=validar(s,d);
+if(r)return aviso(r);
+edges.push({id:'f'+(++seq),s:s.n,sh:s.i,t:d.n,th:d.i,tipo:s.t});atualizar()}
+function fio(e,p){
+e.preventDefault();
+const a={n:p.dataset.n,k:p.dataset.k,i:+p.dataset.i,t:p.dataset.t},[px,py]=pt(byId(a.n),a.k,a.i);
+const mv=ev=>{const r=mundo.getBoundingClientRect(),x=ev.clientX-r.left,y=ev.clientY-r.top;tmp={tipo:a.t,d:a.k==='out'?curva(px,py,x,y):curva(x,y,px,py)};desenhar()};
+const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);tmp=null;desenhar();
+const q=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('.pino');
+if(q&&q!==p)ligar(a,{n:q.dataset.n,k:q.dataset.k,i:+q.dataset.i,t:q.dataset.t})};
+addEventListener('pointermove',mv);addEventListener('pointerup',up)}
+function arrastar(e,el){
+const n=byId(el.dataset.id),sx=e.clientX,sy=e.clientY,ox=n.x,oy=n.y;let mov=false;
+selecionar({t:'no',id:n.id});
+const mv=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(!mov&&Math.hypot(dx,dy)<4)return;mov=true;
+n.x=Math.max(0,sn(ox+dx));n.y=Math.max(0,sn(oy+dy));el.style.left=n.x+'px';el.style.top=n.y+'px';desenhar()};
+const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);
+if(!mov&&n.b==='result.histogram'){n.aberto=!n.aberto;painel(n)}};
+addEventListener('pointermove',mv);addEventListener('pointerup',up)}
+mundo.addEventListener('pointerdown',e=>{
+const p=e.target.closest('.pino');if(p)return fio(e,p);
+if(e.target.closest('.painel,select'))return;
+const c=e.target.closest('.chip');if(c)return arrastar(e,c);
+selecionar(null)});
+fios.addEventListener('click',e=>{const id=e.target.dataset&&e.target.dataset.e;if(id)selecionar({t:'fio',id})});
+addEventListener('keydown',e=>{if((e.key==='Delete'||e.key==='Backspace')&&!/SELECT|INPUT/.test(document.activeElement.tagName)){e.preventDefault();apagar()}});
+
+/* ---------- barra de blocos ---------- */
+$('#dock').innerHTML=Object.keys(CAT).map(k=>`<div class="grupo"><div class="fichas">${BL.filter(b=>b.cat===k).map(b=>
+`<div role="button" tabindex="0" draggable="true" class="ficha" data-b="${b.id}" title="${b.titulo}" style="--cor:${CAT[k][1]};--sombra:${CAT[k][2]}">${b.nome}</div>`).join('')}</div><span class="legenda">${CAT[k][0]}</span></div>`).join('');
+const addCentro=b=>{const o=(off++%6)*20;add(b,vista.scrollLeft+vista.clientWidth/2-48+o,vista.scrollTop+vista.clientHeight/2-72+o)};
+$('#dock').addEventListener('dragstart',e=>{const f=e.target.closest('.ficha');if(!f)return;e.dataTransfer.setData(TIPO,f.dataset.b);e.dataTransfer.effectAllowed='copy'});
+$('#dock').addEventListener('click',e=>{const f=e.target.closest('.ficha');if(f)addCentro(f.dataset.b)});
+$('#dock').addEventListener('keydown',e=>{const f=e.target.closest('.ficha');if(f&&(e.key==='Enter'||e.key===' ')){e.preventDefault();addCentro(f.dataset.b)}});
+vista.addEventListener('dragover',e=>{if(e.dataTransfer.types.includes(TIPO)){e.preventDefault();e.dataTransfer.dropEffect='copy'}});
+vista.addEventListener('drop',e=>{const b=e.dataTransfer.getData(TIPO);if(!b)return;e.preventDefault();const r=mundo.getBoundingClientRect();add(b,e.clientX-r.left-48,e.clientY-r.top-32)});
+$('#lim').onclick=()=>{if(nodes.length&&confirm('Remover todos os blocos e fios?'))limpar()};
+
+/* ---------- exemplo: meio somador (A + B) ---------- */
+function exemplo(){
+if(nodes.length&&!confirm('Substituir o circuito atual pelo somador?'))return;
+limpar();
+const a=mk('qubit.create',60,100),ha=mk('gate.h',200,100),b=mk('qubit.create',60,240),hb=mk('gate.h',200,240),c=mk('qubit.create',60,380),
+tof=mk('gate.ccx',340,200),cx=mk('gate.cx',540,160),ma=mk('measure',700,100),ms=mk('measure',700,220),mc=mk('measure',700,340),h=mk('result.histogram',880,180);
+const f=(s,sh,t,th)=>edges.push({id:'f'+(++seq),s:s.id,sh,t:t.id,th,tipo:B[s.b].outs[sh].t});
+f(a,0,ha,0);f(b,0,hb,0);f(ha,0,tof,0);f(hb,0,tof,1);f(c,0,tof,2);f(tof,0,cx,0);f(tof,1,cx,1);f(tof,2,mc,0);
+f(cx,0,ma,0);f(cx,1,ms,0);f(ma,0,h,0);f(ms,0,h,1);f(mc,0,h,2);
+atualizar()}
+$('#ex').onclick=exemplo;
+exemplo();
+</script>
+</body>
+</html>
